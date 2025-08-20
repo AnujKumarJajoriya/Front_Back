@@ -1,45 +1,42 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { View, Text, StatusBar } from 'react-native'
+import React from 'react'
+import { NavigationContainer } from "@react-navigation/native";
+import StackNavigation from "./components/StackNavigation";
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+const App = () => {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
+
+    <NavigationContainer>
+      <StatusBar
+    barStyle="dark-content"
+    backgroundColor="#BBDCE5"
+    ></StatusBar>
+      <StackNavigation />
+    </NavigationContainer>
+
+  )
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+export default App
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+// npm install @react-navigation/native
+// npm install react-native-screens react-native-safe-area-context
+// npm install @react-navigation/native-stack
+// npm install @react-navigation/bottom-tabs
+// npm install @react-navigation/material-top-tabs
+// npm install react-native-pager-view
 
-export default App;
+// Drawer 
+// npm install @react-navigation/drawer
+// npm install react-native-gesture-handler react-native-reanimated
+//  plugins: [
+//
+//      'react-native-reanimated/plugin',
+//    ],                                       add in bable.config.js
+
+// npm i react-native-heroicons
+// npm i react-native-responsive-screen
+// npm i react-native-masonry-list
+
+// npm i react-native-vector-icons
