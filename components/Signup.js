@@ -46,12 +46,12 @@ const Signup = () => {
     }
 
     return (
-        <View style={{ backgroundColor: "#BBDCE5", flex: 1 }}>
+        <View style={{ backgroundColor: "white", flex: 1 }}>
 
 
 
             <View style={{ justifyContent: "center", alignItems: "center", margin: hp(3) }}>
-                <Image source={require("./assets/ghost.jpg")} style={{ height: hp(23), width: wp(52), borderRadius: hp(80), margin: hp(4), marginBottom: hp(1.8) }}></Image>
+                <Image source={require("./assets/mainimage.jpg")} style={{ height: hp(23), width: wp(52), borderRadius: hp(80), margin: hp(4), marginBottom: hp(1.8) }}></Image>
 
             </View>
 
@@ -71,7 +71,7 @@ const Signup = () => {
                         value={UserName}
                         onChangeText={(text) => setusername(text)}
                         placeholder='Enter Your UserName'
-                        style={{ height: hp(5), width: wp("80%"), borderWidth: hp(0.2), borderColor: "black", backgroundColor: "#EAEFEF", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(1) }}
+                        style={{ height: hp(5), width: wp("88%"), borderBottomWidth: hp(0.2), borderColor: "black", backgroundColor: "#ffffffff", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(1.7) }}
                     >
 
                     </TextInput>
@@ -88,7 +88,7 @@ const Signup = () => {
                         value={email}
                         onChangeText={(text) => setemail(text)}
                         placeholder='Enter Your Email'
-                        style={{ height: hp(5), width: wp("80%"), borderWidth: hp(0.2), borderColor: "black", backgroundColor: "#EAEFEF", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(1) }}
+                        style={{ height: hp(5), width: wp("88%"), borderBottomWidth: hp(0.2), borderColor: "black", backgroundColor: "#ffffffff", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(1.7) }}
                     >
 
                     </TextInput>
@@ -106,7 +106,7 @@ const Signup = () => {
                         onChangeText={(text) => setpassword(text)}
                         placeholder='Enter Your Password'
                         secureTextEntry
-                        style={{ height: hp(5), width: wp("80%"), borderWidth: hp(0.2), borderColor: "black", backgroundColor: "#EAEFEF", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(0.7) }}
+                        style={{ height: hp(5), width: wp("88%"), borderBottomWidth: hp(0.2), borderColor: "black", backgroundColor: "#ffffffff", borderRadius: hp(3), paddingLeft: hp(1.8), marginBottom: hp(0.7) }}
                     >
 
                     </TextInput>
@@ -117,7 +117,7 @@ const Signup = () => {
                 <View style={{ marginTop: hp(5) }}>
 
                     <TouchableOpacity onPress={() => handlesignup()}>
-                        <View style={{ justifyContent: "center", alignItems: "center", backgroundColor: "#3674B5", height: hp(5), width: wp("85%"), borderRadius: hp(15), elevation: 5 }}>
+                        <View style={{ justifyContent: "center", alignItems: "center", backgroundColor: "#37353E", height: hp(5), width: wp("88%"), borderTopLeftRadius: hp(15), borderBottomRightRadius: hp(15),elevation: 5 }}>
 
 
                             <Text style={{ fontSize: hp(2.5), fontWeight: "bold", color: "white" }}>Sign Up</Text>
@@ -131,7 +131,7 @@ const Signup = () => {
                         <Text style={{ fontSize: hp(1.5), fontWeight: "bold", color: "black" }}> Already have a Account ?</Text>
 
                         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                            <Text style={{ fontSize: hp(1.9), fontWeight: "bold", color: "#3674B5", marginLeft: hp(1) }}>Login</Text>
+                            <Text style={{ fontSize: hp(1.9), fontWeight: "bold", color: "#00809D", marginLeft: hp(1) }}>Login</Text>
                         </TouchableOpacity>
                     </View>
 

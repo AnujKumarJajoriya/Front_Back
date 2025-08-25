@@ -1,14 +1,20 @@
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, Image, TextInput, FlatList, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ScrollView
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
 
 const Home = () => {
-
-
   const [user, setUser] = useState(null);
-
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [posts, setPosts] = useState([]);
@@ -16,10 +22,7 @@ const Home = () => {
   const userinfo = async () => {
     const storedUser = await AsyncStorage.getItem("user");
     setUser(JSON.parse(storedUser));
-  }
-
-
-
+  };
 
   const opengallery = () => {
     ImagePicker.openPicker({
@@ -27,24 +30,20 @@ const Home = () => {
       height: 300,
       width: 300
     }).then((image) => {
-      setImage(image.path)
-    })
-  }
-
+      setImage(image.path);
+    });
+  };
 
   const handlepost = async () => {
     try {
-
-
       const token = await AsyncStorage.getItem("token");
       if (!token) return alert("Please login first.");
       if (!image) return alert("Please select an image");
 
-
       const formData = new FormData();
       formData.append("image", {
         uri: image,
-        type: "image/jpeg", // or "image/png"
+        type: "image/jpeg",
         name: "photo.jpg"
       });
       formData.append("caption", caption);
@@ -72,137 +71,140 @@ const Home = () => {
     }
   };
 
-
-
   const fetchPosts = async () => {
     const token = await AsyncStorage.getItem("token");
     const res = await fetch("http://10.0.2.2:5000/posts", {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
-    setPosts(data)
-  }
-
+    setPosts(data);
+  };
 
   useEffect(() => {
-    userinfo()
-    fetchPosts()
-  }, [])
-  return (
-    <View style={{flex:1}}>
-      
-   <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+    userinfo();
+    fetchPosts();
+  }, []);
 
-      <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+
+        {/* Banner Section */}
         <ImageBackground
           source={require('./assets/ghost.jpg')}
           style={style.imageBanner}
-
         >
-          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', borderRadius: hp(2), ...StyleSheet.absoluteFillObject, justifyContent: "center" }}>
-
-
+          <View style={style.overlay}>
             {user ? (
               <>
-                <Text style={{
-                  fontSize: hp(2.5), color: 'white', fontWeight: 'bold', marginLeft: hp(2.2), marginTop: hp(1.2)
-                }}>
-                  Welcome, {user.username} 👋
-                </Text>
-                <Text style={{
-                  fontSize: hp(1.7), color: 'white', fontWeight: 'bold', marginLeft: hp(2.2), marginTop: hp(0.2)
-                }}>{user.email}</Text>
-
+                <Text style={style.welcome}>Welcome, {user.username} 👋</Text>
+                <Text style={style.email}>{user.email}</Text>
               </>
             ) : (
-              <Text style={{ fontSize: 18 }}>Guest</Text>
+              <Text style={style.welcome}>Guest</Text>
             )}
-
-            <Text style={{
-              fontSize: hp(1.5), color: 'white', fontWeight: 'bold', marginLeft: hp(2.2), marginTop: hp(1.2)
-            }}>Enjoy this App
-            </Text>
-            <Text style={{
-              fontSize: hp(1.5), color: 'white', fontWeight: 'bold', marginLeft: hp(2.2)
-            }}>By Interacting with people
-            </Text>
-            <Text style={{
-              fontSize: hp(2.0), color: 'white', fontWeight: 'bold', marginLeft: hp(2.2), marginTop: hp(0.4)
-            }}>Create Exciting Posts
-            </Text>
-
+            <Text style={style.tagline}>Enjoy this App by interacting with people</Text>
+            <Text style={style.createPost}>Create Exciting Posts 🚀</Text>
           </View>
-
         </ImageBackground>
 
+        {/* Create Post Section */}
+        <View style={style.card}>
 
-      </View>
+          <TouchableOpacity style={style.imageBox} onPress={opengallery}>
+            {image ? (
+              <Image source={{ uri: image }} style={style.preview} />
+            ) : (
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 28 }}>📷</Text>
+                <Text style={style.imageText}>Tap to Select Image</Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
-      <View style={style.card}>
-        {/* Image Picker Box */}
-        <TouchableOpacity style={style.imageBox} onPress={opengallery} >
-          {image ? (
-            <Image source={{ uri: image }} style={style.preview} />
-          ) : (
-            <Text style={style.imageText}>+ Select Image</Text>
-          )}
-        </TouchableOpacity>
+          <TextInput
+            style={style.captionInput}
+            placeholder="Write a caption..."
+            value={caption}
+            onChangeText={setCaption}
+            multiline
+          />
 
-        {/* Caption */}
-        <TextInput
-          style={style.captionInput}
-          placeholder="Write a caption..."
-          value={caption}
-          onChangeText={setCaption}
-          multiline
-        />
+          <TouchableOpacity style={style.postButton} onPress={handlepost}>
+            <Text style={style.postText}>Post</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Post Button */}
-        <TouchableOpacity style={style.postButton} onPress={handlepost} >
-          <Text style={style.postText}>Post</Text>
-        </TouchableOpacity>
-      </View>
-      
+        <Text style={{ fontSize: hp(2), fontWeight: 'bold', color: '#000000ff', marginTop: 25, marginLeft: 15 }}>Here is a collection of Posts</Text>
+        {/* Posts Feed */}
+        {posts.map((item) => (
+          <View key={item._id} style={style.postCard}>
 
-     {posts.map((item) => (
-    <View key={item._id} style={style.postCard}>
-      <Text style={{ fontSize: 12, color: "gray", marginLeft: 10 }}>
-        Posted by {item.user?.username || "Unknown"}
-      </Text>
-      <Image
-        source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
-        style={style.postImage}
-      />
-      <Text style={style.postcaption}>{item.caption}</Text>
+            {/* Header with Avatar */}
+            <View style={style.postHeader}>
+              <View style={style.avatar}>
+                <Text style={style.avatarText}>
+                  {item.user?.username ? item.user.username[0] : "?"}
+                </Text>
+              </View>
+              <Text style={style.username}>{item.user?.username || "Unknown"}</Text>
+            </View>
+            <View style={style.separator} />
+
+            {/* Image */}
+            <Image
+              source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
+              style={style.postImage}
+            />
+
+            {/* Caption */}
+            <Text style={style.postCaption}>{item.caption}</Text>
+            <View style={style.separator} />
+
+            {/* Actions */}
+            <View style={style.postActions}>
+              <TouchableOpacity><Text style={style.actionText}>❤️ Like</Text></TouchableOpacity>
+              <TouchableOpacity><Text style={style.actionText}>💬 Comment</Text></TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
     </View>
-  ))}
-   
-    </ScrollView>
-    </View>
-  )
-}
+  );
+};
 
-export default Home
-
+export default Home;
 
 const style = StyleSheet.create({
   imageBanner: {
     width: wp('100%'),
-    height: hp(20),
+    height: hp(22),
     justifyContent: "flex-start",
     alignItems: "flex-start",
+    overflow: "hidden",
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.70)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  welcome: { fontSize: hp(3), fontWeight: 'bold', color: '#fff' },
+  email: { fontSize: hp(1.8), color: '#eee', marginTop: 5 },
+  tagline: { fontSize: hp(1.6), color: '#ddd', marginTop: 12 },
+  createPost: { fontSize: hp(2), fontWeight: 'bold', color: '#fff', marginTop: 5 },
 
   card: {
-    width: ("100%"),
-    backgroundColor: "#BBDCE5",
+    paddingBottom: 20,
+    backgroundColor: "#fff",
     padding: 16,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 4,
-    gap: 12
+    shadowRadius: 5,
+    elevation: 3,
   },
   imageBox: {
     height: 200,
@@ -212,9 +214,8 @@ const style = StyleSheet.create({
     justifyContent: "center"
   },
   imageText: {
-    color: "#000000ff",
+    color: "#555",
     fontSize: 16,
-
   },
   preview: {
     width: "100%",
@@ -223,36 +224,56 @@ const style = StyleSheet.create({
   },
   captionInput: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ddd",
     borderRadius: 12,
-    padding: 10,
+    padding: 12,
     minHeight: 60,
     textAlignVertical: "top",
-    borderColor: "black",
-    borderWidth: 1.5
+    marginTop: 12,
+    fontSize: 15,
   },
   postButton: {
-    backgroundColor: "#111",
+    backgroundColor: "#00809D",
     paddingVertical: 12,
     borderRadius: 10,
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: 12,
   },
   postText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
-    
   },
+
   postCard: {
-     marginTop: 15,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
+    backgroundColor: "#ece5e5ff",
+    padding: 19,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+    marginBottom:20,
+  
   },
-  postImage: { width: "100%", height: 200, borderRadius: 10 },
-  postcaption: { marginTop: 10, fontSize: 14, marginLeft:10 },
+  postHeader: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#00809D",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  username: { marginLeft: 10, fontWeight: "600", fontSize: 16 },
+  postImage: { width: "100%", height: 220, borderRadius: 10, marginTop: 6 },
+  postCaption: { marginTop: 10, marginBottom: 10, marginLeft: 10, fontSize: 15, color: "#333" },
+  postActions: { flexDirection: "row", justifyContent: "space-around", marginTop: 10 },
+  actionText: { fontSize: 15, color: "#00809D", fontWeight: "500", fontWeight: "bold" },
 
-
-})
+  separator: {
+    height: 1,
+    backgroundColor: "#c2bebeff",
+    marginBottom: 3
+  },
+});

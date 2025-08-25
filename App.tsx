@@ -9,7 +9,7 @@ const App = () => {
     <NavigationContainer>
       <StatusBar
     barStyle="dark-content"
-    backgroundColor="#BBDCE5"
+    backgroundColor="white"
     ></StatusBar>
       <StackNavigation />
     </NavigationContainer>
@@ -37,6 +37,4 @@ export default App
 
 // npm i react-native-heroicons
 // npm i react-native-responsive-screen
-// npm i react-native-masonry-list
-
 // npm i react-native-vector-icons
