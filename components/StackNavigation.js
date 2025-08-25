@@ -28,7 +28,7 @@ const StackNavigation = () => {
     return (
       <View style={{ flex: 1, backgroundColor: "#BBDCE5" }}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Image source={require("./assets/ghost.jpg")}
+          <Image source={require("./assets/mainimage.jpg")}
             style={{ height: 200, width: 200, borderRadius: 100, marginBottom: 30 }}
           />
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", fontStyle: "italic" }}>
