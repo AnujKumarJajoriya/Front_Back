@@ -26,7 +26,7 @@ const StackNavigation = () => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: "#BBDCE5" }}>
+      <View style={{ flex: 1, backgroundColor: "white" }}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Image source={require("./assets/mainimage.jpg")}
             style={{ height: 200, width: 200, borderRadius: 100, marginBottom: 30 }}

@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
+import moment from 'moment';
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -232,9 +233,32 @@ const Home = () => {
             <ScrollView style={{ flex: 1, padding: 15 }}>
               {selectedPost.comments?.length > 0 ? (
                 selectedPost.comments.map((comment, index) => (
-                  <View key={index} style={{ marginBottom: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>{comment.user?.username || "User"}</Text>
-                    <Text>{comment.text}</Text>
+                  <View key={index} style={{ marginBottom: 20 }}>
+                    <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                      <View style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 21,
+                        backgroundColor: "#00809D",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}>
+                        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15, }}>
+                          {comment.user?.username ? comment.user.username[0] : "?"}
+                        </Text>
+
+                      </View>
+                      <View>
+                        <Text style={{ fontWeight: "bold", marginLeft: 7, fontSize: 15 }}>{comment.user?.username || "User"}</Text>
+
+                        <Text style={{ marginLeft: 7, }}>{comment.text}</Text>
+                        <Text style={{ fontSize: 12, color: "gray", marginLeft: 7 }}>
+                          {moment(comment.createdAt).fromNow()}
+                        </Text>
+                      </View>
+
+                    </View>
+
                   </View>
                 ))
               ) : (
