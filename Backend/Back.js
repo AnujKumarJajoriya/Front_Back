@@ -133,6 +133,51 @@ app.get("/posts", verifyToken, async (req, res) => {
 })
 
 
+app.post("/posts/:id/like", verifyToken, async (req, res) => {
+    const post = await postmodel.findById(req.params.id)
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const userid = req.userId
+    if (post.likes.includes(userid)) {
+        post.likes.pull(userid)
+        await post.save();
+        return res.json({ message: "Post unliked", likes: post.likes.length });
+
+    } else {
+        post.likes.push(userid)
+        await post.save();
+        res.json({ message: "Post liked", likes: post.likes.length });
+
+    }
+
+})
+
+
+app.post("/posts/:id/comment", verifyToken, async (req, res) => {
+
+    const { text } = req.body
+    if (!text) return res.status(400).json({ message: "Comment text is required" });
+    const post = await postmodel.findById(req.params.id)
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const comment = { user: req.userId, text: text }
+    post.comments.push(comment)
+    await post.save();
+
+
+    const updatedpost = await postmodel.findById(req.params.id)
+        .populate("user", "username email") // populate user
+        .populate("comments.user", "username email"); // populate comment users
+
+
+    res.status(201).json({
+        message: "Comment added",
+        post: updatedpost,
+    });
+
+
+})
+
 
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000")

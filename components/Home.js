@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  ScrollView
+  ScrollView,
+  Modal
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -79,6 +80,42 @@ const Home = () => {
     const data = await res.json();
     setPosts(data);
   };
+
+
+
+  const handleLike = async (postid) => {
+    const token = await AsyncStorage.getItem("token");
+    const res = await fetch(`http://10.0.2.2:5000/posts/${postid}/like`, {
+      method: "Post",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    fetchPosts()
+
+  }
+
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [commentText, setCommentText] = useState("");
+
+
+  const handleComment = async (postid) => {
+    if (!commentText.trim()) return;
+
+    const token = await AsyncStorage.getItem("token");
+    const res = await fetch(`http://10.0.2.2:5000/posts/${postid}/comment`, {
+      method: "Post",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text: commentText })
+    });
+    const data = await res.json();
+    setCommentText("");
+    fetchPosts();
+    setSelectedPost(data.post);
+  }
 
   useEffect(() => {
     userinfo();
@@ -163,12 +200,69 @@ const Home = () => {
 
             {/* Actions */}
             <View style={style.postActions}>
-              <TouchableOpacity><Text style={style.actionText}>❤️ Like</Text></TouchableOpacity>
-              <TouchableOpacity><Text style={style.actionText}>💬 Comment</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => handleLike(item._id)}><Text style={style.actionText}> {item.likes?.includes(user?.id) ? "💔 Unlike" : "❤️ Like"} {item.likes?.length || 0}</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => {
+                setSelectedPost(item);
+                setShowCommentModal(true);
+              }}><Text style={style.actionText}>💬 {item.comments?.length || 0} Comments</Text></TouchableOpacity>
             </View>
+
+
           </View>
         ))}
       </ScrollView>
+
+
+      {showCommentModal && selectedPost && (
+        <Modal
+          visible={showCommentModal}
+          animationType="slide"
+          onRequestClose={() => setShowCommentModal(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: "#fff" }}>
+            {/* Header */}
+            <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 15, borderBottomWidth: 1, borderColor: "#ccc" }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Comments</Text>
+              <TouchableOpacity onPress={() => setShowCommentModal(false)}>
+                <Text style={{ fontSize: 16, color: "red" }}>Close ✖</Text>
+              </TouchableOpacity>
+            </View>
+
+
+            <ScrollView style={{ flex: 1, padding: 15 }}>
+              {selectedPost.comments?.length > 0 ? (
+                selectedPost.comments.map((comment, index) => (
+                  <View key={index} style={{ marginBottom: 10 }}>
+                    <Text style={{ fontWeight: "bold" }}>{comment.user?.username || "User"}</Text>
+                    <Text>{comment.text}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={{ color: "#555" }}>No comments yet.</Text>
+              )}
+            </ScrollView>
+
+            <View style={{ flexDirection: "row", padding: 10, borderTopWidth: 1, borderColor: "#ccc" }}>
+              <TextInput
+                style={{ flex: 1, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 10 }}
+                placeholder="Write a comment..."
+                value={commentText}
+                onChangeText={setCommentText}
+              />
+
+              <TouchableOpacity
+                style={{ backgroundColor: "#00809D", paddingHorizontal: 15, justifyContent: "center", marginLeft: 8, borderRadius: 8 }}
+                onPress={() => handleComment(selectedPost._id)}
+              >
+
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>Post</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+        </Modal>
+      )}
     </View>
   );
 };
@@ -252,8 +346,8 @@ const style = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 3,
-    marginBottom:20,
-  
+    marginBottom: 20,
+
   },
   postHeader: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   avatar: {
