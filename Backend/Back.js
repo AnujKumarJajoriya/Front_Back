@@ -179,6 +179,31 @@ app.post("/posts/:id/comment", verifyToken, async (req, res) => {
 })
 
 
+
+app.get("/myposts", verifyToken, async (req, res) => {
+
+
+    const posts = await postmodel.find({ user: req.userId })
+        .sort({ _id: -1 })
+        .populate("user", "username email") // populate user
+        .populate("comments.user", "username"); // populate comment users
+
+    res.json(posts);
+
+
+})
+
+
+app.get("/allusers", verifyToken, async (req, res) => {
+
+
+    const allusers = await usermodel.find({} , "username email")
+    res.json(allusers);
+
+
+})
+
+
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000")
 })

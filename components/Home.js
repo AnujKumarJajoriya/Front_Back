@@ -7,18 +7,20 @@ import {
   Image,
   TextInput,
   ScrollView,
-  Modal
+  Modal,
+  BackHandler,
+  FlatList
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-const Home = () => {
+const Home = ({ navigation }) => {
+
   const [user, setUser] = useState(null);
-  const [image, setImage] = useState(null);
-  const [caption, setCaption] = useState("");
   const [posts, setPosts] = useState([]);
 
   const userinfo = async () => {
@@ -26,52 +28,7 @@ const Home = () => {
     setUser(JSON.parse(storedUser));
   };
 
-  const opengallery = () => {
-    ImagePicker.openPicker({
-      cropping: true,
-      height: 300,
-      width: 300
-    }).then((image) => {
-      setImage(image.path);
-    });
-  };
 
-  const handlepost = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) return alert("Please login first.");
-      if (!image) return alert("Please select an image");
-
-      const formData = new FormData();
-      formData.append("image", {
-        uri: image,
-        type: "image/jpeg",
-        name: "photo.jpg"
-      });
-      formData.append("caption", caption);
-
-      const res = await fetch("http://10.0.2.2:5000/posts", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      });
-
-      const data = await res.json();
-      console.log("Response:", data);
-
-      if (res.ok) {
-        alert("Post uploaded ✅");
-        setCaption("");
-        setImage(null);
-        fetchPosts();
-      } else {
-        alert(data.message || "Something went wrong ❌");
-      }
-    } catch (error) {
-      console.error("Error uploading post:", error);
-      alert("Network error ❌");
-    }
-  };
 
   const fetchPosts = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -118,60 +75,89 @@ const Home = () => {
     setSelectedPost(data.post);
   }
 
+
+  const [allusers, setallusers] = useState([])
+  const fetchusers = async () => {
+    const token = await AsyncStorage.getItem("token");
+    const res = await fetch("http://10.0.2.2:5000/allusers", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    setallusers(data)
+  };
+
+
   useEffect(() => {
     userinfo();
     fetchPosts();
+    fetchusers()
   }, []);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPosts();   // 🔄 refresh posts every time Home is focused
+    }, [])
+  );
+
+  // 🏠 Refresh when Home tab is pressed
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("tabPress", () => {
+      fetchPosts();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
-        {/* Banner Section */}
-        <ImageBackground
-          source={require('./assets/ghost.jpg')}
-          style={style.imageBanner}
-        >
-          <View style={style.overlay}>
-            {user ? (
-              <>
-                <Text style={style.welcome}>Welcome, {user.username} 👋</Text>
-                <Text style={style.email}>{user.email}</Text>
-              </>
-            ) : (
-              <Text style={style.welcome}>Guest</Text>
-            )}
-            <Text style={style.tagline}>Enjoy this App by interacting with people</Text>
-            <Text style={style.createPost}>Create Exciting Posts 🚀</Text>
-          </View>
-        </ImageBackground>
+        <View style={{ justifyContent: "flex-start", alignItems: "flex-start", marginLeft: 5, marginTop: 15 }}>
 
-        {/* Create Post Section */}
-        <View style={style.card}>
 
-          <TouchableOpacity style={style.imageBox} onPress={opengallery}>
-            {image ? (
-              <Image source={{ uri: image }} style={style.preview} />
-            ) : (
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 28 }}>📷</Text>
-                <Text style={style.imageText}>Tap to Select Image</Text>
+          <FlatList
+            data={allusers}
+            keyExtractor={(item) => item._id}   // ✅ unique id from MongoDB
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={
+              <Text style={{ marginLeft: 20, color: "#666" }}>No users found</Text>
+            }
+            renderItem={({ item }) => (
+              <View style={{ alignItems: "center", marginHorizontal: 10 }}>
+
+                {/* Avatar */}
+                <View style={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: 35,
+                  backgroundColor: "#00809D",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}>
+                  <View style={{
+                    width: 62,
+                    height: 62,
+                    borderRadius: 40,
+                    backgroundColor: "#230909ff",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{color: "#fff", fontWeight: "bold", fontSize: 26 }}>
+                      {item.username ? item.username[0].toUpperCase() : "?"}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Username */}
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#333", marginTop: 5 }}>
+                  {item.username}
+                </Text>
               </View>
             )}
-          </TouchableOpacity>
-
-          <TextInput
-            style={style.captionInput}
-            placeholder="Write a caption..."
-            value={caption}
-            onChangeText={setCaption}
-            multiline
           />
-
-          <TouchableOpacity style={style.postButton} onPress={handlepost}>
-            <Text style={style.postText}>Post</Text>
-          </TouchableOpacity>
         </View>
+
 
         <Text style={{ fontSize: hp(2), fontWeight: 'bold', color: '#000000ff', marginTop: 25, marginLeft: 15 }}>Here is a collection of Posts</Text>
         {/* Posts Feed */}
@@ -189,17 +175,16 @@ const Home = () => {
             </View>
             <View style={style.separator} />
 
-            {/* Image */}
+
             <Image
               source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
-              style={style.postImage}
+              style={{ width: "100%", height: 200, borderRadius: 10 }}
+              resizeMode="cover"
             />
+            <Text style={{ marginTop: 5, fontWeight: "bold", marginBottom: 5, marginLeft: 3 }}>{item.caption}</Text>
 
-            {/* Caption */}
-            <Text style={style.postCaption}>{item.caption}</Text>
             <View style={style.separator} />
 
-            {/* Actions */}
             <View style={style.postActions}>
               <TouchableOpacity onPress={() => handleLike(item._id)}><Text style={style.actionText}> {item.likes?.includes(user?.id) ? "💔 Unlike" : "❤️ Like"} {item.likes?.length || 0}</Text></TouchableOpacity>
               <TouchableOpacity onPress={() => {
@@ -207,6 +192,7 @@ const Home = () => {
                 setShowCommentModal(true);
               }}><Text style={style.actionText}>💬 {item.comments?.length || 0} Comments</Text></TouchableOpacity>
             </View>
+
 
 
           </View>
@@ -296,7 +282,7 @@ export default Home;
 const style = StyleSheet.create({
   imageBanner: {
     width: wp('100%'),
-    height: hp(22),
+    height: wp(28),
     justifyContent: "flex-start",
     alignItems: "flex-start",
     overflow: "hidden",
@@ -307,9 +293,9 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  welcome: { fontSize: hp(3), fontWeight: 'bold', color: '#fff' },
-  email: { fontSize: hp(1.8), color: '#eee', marginTop: 5 },
-  tagline: { fontSize: hp(1.6), color: '#ddd', marginTop: 12 },
+  welcome: { fontSize: hp(2.2), fontWeight: 'bold', color: '#fff' },
+  email: { fontSize: hp(1.5), color: '#eee', marginTop: 5 },
+  tagline: { fontSize: hp(1.5), color: '#ddd', marginTop: 12 },
   createPost: { fontSize: hp(2), fontWeight: 'bold', color: '#fff', marginTop: 5 },
 
   card: {
@@ -364,13 +350,15 @@ const style = StyleSheet.create({
   },
 
   postCard: {
-    backgroundColor: "#ece5e5ff",
-    padding: 19,
+    margin: 10,
+    backgroundColor: "white",
+    padding: 15,
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 3,
-    marginBottom: 20,
+    marginBottom: 7,
+    borderRadius: 10
 
   },
   postHeader: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
