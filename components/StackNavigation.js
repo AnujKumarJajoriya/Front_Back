@@ -7,6 +7,8 @@ import Welcome from "./Welcome";
 import Signup from "./Signup";
 import Login from "./Login";
 import BottomTabNavigation from "./BottomTabNavigation"
+import LikedPosts from "./LikedPosts"
+import CommentedPosts from "./CommentedPosts"
 
 const Stack = createNativeStackNavigator()
 
@@ -45,6 +47,8 @@ const StackNavigation = () => {
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
+         <Stack.Screen name="LikedPosts" component={LikedPosts} />
+          <Stack.Screen name="CommentedPosts" component={CommentedPosts} />
       </Stack.Navigator>
   )
 }

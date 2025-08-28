@@ -232,8 +232,8 @@ const Profile = () => {
 
     const removebio = async () => {
         if (bio) {
-           await AsyncStorage.removeItem(`${user.id}_Bio`)
-             setBio("")
+            await AsyncStorage.removeItem(`${user.id}_Bio`)
+            setBio("")
 
         }
         seteditpromodal(false)
@@ -286,7 +286,7 @@ const Profile = () => {
 
 
                 }}>
-                    
+
                     {image ? (
                         <Image source={{ uri: image }} style={{
                             width: 103,
@@ -400,7 +400,7 @@ const Profile = () => {
 
             <View style={{ justifyContent: "flex-start", alignItems: "flex-start", marginRight: 130 }}>
 
-                <Text style={{ fontSize: 15, color: "grey", marginBottom: 13, marginLeft: 19 , fontWeight:"bold"}}>
+                <Text style={{ fontSize: 15, color: "#636262ff", marginBottom: 13, marginLeft: 19, fontWeight: "bold" }}>
                     {bio ? bio : "No bio yet..."}
                 </Text>
 
@@ -420,8 +420,8 @@ const Profile = () => {
 
             <View style={styles.postActions}>
                 <TouchableOpacity ><Text style={styles.actionText}>Posts  📷</Text></TouchableOpacity>
-                <TouchableOpacity ><Text style={styles.actionText}>Liked ❤️</Text></TouchableOpacity>
-                <TouchableOpacity ><Text style={styles.actionText}>Comment 💬</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("LikedPosts")}><Text style={styles.actionText}>Liked ❤️</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("CommentedPosts")}><Text style={styles.actionText}>Comment 💬</Text></TouchableOpacity>
             </View>
 
             <View style={styles.separator} />
@@ -436,10 +436,14 @@ const Profile = () => {
                 renderItem={({ item }) => (
                     <View style={{
                         margin: 10,
-                        borderWidth: 1,
-                        borderColor: "#ddd",
-                        borderRadius: 10,
-                        padding: 10,
+                        backgroundColor: "white",
+                        padding: 15,
+                        shadowColor: "#000",
+                        shadowOpacity: 0.08,
+                        shadowRadius: 6,
+                        elevation: 3,
+                        marginBottom: 7,
+                        borderRadius: 10
 
                     }}>
                         <Image
@@ -547,7 +551,7 @@ const Profile = () => {
                     {/* Header */}
                     <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 15, borderBottomWidth: 1, borderColor: "#ccc" }}>
                         <Text style={{ fontSize: 18, fontWeight: "bold" }}>Create Post</Text>
-                        <TouchableOpacity onPress={() => setShowCommentModal(false)}>
+                        <TouchableOpacity onPress={() => setcreatepostmodal(false)}>
                             <Text style={{ fontSize: 16, color: "red" }}>Close ✖</Text>
                         </TouchableOpacity>
                     </View>

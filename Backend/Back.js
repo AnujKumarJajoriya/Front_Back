@@ -204,6 +204,34 @@ app.get("/allusers", verifyToken, async (req, res) => {
 })
 
 
+app.get("/likedPosts", verifyToken, async (req, res) => {
+
+
+    const Likedposts = await postmodel.find({ likes: req.userId })
+        .sort({ _id: -1 })
+        .populate("user", "username email") // populate user
+        .populate("comments.user", "username"); // populate comment users
+
+    res.json(Likedposts);
+
+
+})
+
+
+app.get("/commentedPosts", verifyToken, async (req, res) => {
+
+
+    const commentedpost = await postmodel.find({ "comments.user": req.userId })
+        .sort({ _id: -1 })
+        .populate("user", "username email") // populate user
+        .populate("comments.user", "username"); // populate comment users
+
+    res.json(commentedpost);
+
+
+})
+
+
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000")
 })
