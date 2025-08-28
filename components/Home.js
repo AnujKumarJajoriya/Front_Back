@@ -83,16 +83,36 @@ const Home = ({ navigation }) => {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
-    setallusers(data)
+
+    if (user) {
+      const sorted = data.sort((a, b) =>
+        a._id === user.id ? -1 : b._id === user.id ? 1 : 0
+      );
+      setallusers(sorted);
+    } else {
+      setallusers(data);
+    }
   };
 
 
   useEffect(() => {
-    userinfo();
-    fetchPosts();
-    fetchusers()
+    const loadingallparts = async () => {
+
+      await userinfo();
+      await fetchPosts();
+    
+    }
+
+    loadingallparts()
+
   }, []);
 
+
+  useEffect(()=>{
+    if (user) {
+        fetchusers()
+    }
+  },[user])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -121,40 +141,44 @@ const Home = ({ navigation }) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             ListEmptyComponent={
-              <Text style={{ marginLeft: 20, color: "#666" }}>No users found</Text>
+              <Text style={{ marginLeft: 20, color: "#666" }}></Text>
             }
-            renderItem={({ item }) => (
-              <View style={{ alignItems: "center", marginHorizontal: 10 }}>
+            renderItem={({ item }) => {
+              const isCurrentUser = item._id === user?.id;
+              return (
+                <View style={{ alignItems: "center", marginHorizontal: 10 }}>
 
-                {/* Avatar */}
-                <View style={{
-                  width: 70,
-                  height: 70,
-                  borderRadius: 35,
-                  backgroundColor: "#00809D",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}>
-                  <View style={{
-                    width: 62,
-                    height: 62,
-                    borderRadius: 40,
-                    backgroundColor: "#230909ff",
+                  {/* Avatar */}
+                  <View style={[{
+                    width: 70,
+                    height: 70,
+                    borderRadius: 35,
                     justifyContent: "center",
                     alignItems: "center",
-                  }}>
-                    <Text style={{color: "#fff", fontWeight: "bold", fontSize: 26 }}>
-                      {item.username ? item.username[0].toUpperCase() : "?"}
-                    </Text>
+                  }, isCurrentUser
+                    ? { borderWidth: 7, borderColor: "#FF5733" } // 🔥 Highlight border
+                    : { borderWidth: 2.5, borderColor: "#00809D" }]}>
+                    <View style={{
+                      width: 62,
+                      height: 62,
+                      borderRadius: 40,
+                      backgroundColor: "#230909ff",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                      <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 26 }}>
+                        {item.username ? item.username[0].toUpperCase() : "?"}
+                      </Text>
+                    </View>
                   </View>
-                </View>
 
-                {/* Username */}
-                <Text style={{ fontSize: 14, fontWeight: "600", color: "#333", marginTop: 5 }}>
-                  {item.username}
-                </Text>
-              </View>
-            )}
+                  {/* Username */}
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: "#333", marginTop: 5 }}>
+                    {item.username}
+                  </Text>
+                </View>
+              )
+            }}
           />
         </View>
 
