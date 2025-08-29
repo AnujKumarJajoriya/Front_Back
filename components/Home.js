@@ -17,6 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Ionicons from '@react-native-vector-icons/ionicons'
+
 
 const Home = ({ navigation }) => {
 
@@ -100,7 +102,7 @@ const Home = ({ navigation }) => {
 
       await userinfo();
       await fetchPosts();
-    
+
     }
 
     loadingallparts()
@@ -108,11 +110,11 @@ const Home = ({ navigation }) => {
   }, []);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if (user) {
-        fetchusers()
+      fetchusers()
     }
-  },[user])
+  }, [user])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -130,9 +132,41 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+
+      <View style={{ marginLeft: 17, marginRight: 17, marginTop: 5, marginBottom: 5, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <View>
+
+          <Text style={{ fontSize: 26, fontWeight: "bold", color: "black", fontStyle: "italic" }}>Postify
+          </Text>
+        </View>
+
+
+        <View style={{ flexDirection: "row", justifyContent: "space-around", alignSelf: "center" }}>
+          <TouchableOpacity>
+            <View style={{ marginRight: 18 }}>
+              <Ionicons name='settings' size={27} color="black" />
+
+            </View>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View>
+              <Ionicons name='chatbubble-ellipses' size={27} color="black" />
+
+            </View>
+          </TouchableOpacity>
+
+        </View>
+
+
+
+      </View>
+
+
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
-        <View style={{ justifyContent: "flex-start", alignItems: "flex-start", marginLeft: 5, marginTop: 15 }}>
+        <View style={{ justifyContent: "flex-start", alignItems: "flex-start", marginLeft: 5, marginTop: 8, }}>
 
 
           <FlatList

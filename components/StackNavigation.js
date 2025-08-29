@@ -34,7 +34,7 @@ const StackNavigation = () => {
             style={{ height: 200, width: 200, borderRadius: 100, marginBottom: 30 }}
           />
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", fontStyle: "italic" }}>
-            Welcome to MyApp
+            Welcome to Postify
           </Text>
         </View>
       </View>

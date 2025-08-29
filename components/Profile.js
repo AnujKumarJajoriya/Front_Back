@@ -5,6 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
+import Ionicons from '@react-native-vector-icons/ionicons' 
+
+
 
 
 const Profile = () => {
@@ -412,7 +415,13 @@ const Profile = () => {
                     style={{ backgroundColor: "#00809D", borderRadius: 28, padding: 10, width: wp("80%"), height: hp(4.5), marginTop: 5, marginBottom: 9, justifyContent: "center" }}
 
                 >
-                    <Text style={{ color: "white", fontWeight: "bold", textAlign: "center", textAlignVertical: "center", fontSize: 17 }} >Create Post </Text>
+
+                    <View style={{flexDirection:"row" , justifyContent:"center" , alignItems:"center"}}>
+ <Text style={{ color: "white", fontWeight: "bold", textAlign: "center", textAlignVertical: "center", fontSize: 17 , marginRight:5 }} >Create Post </Text>
+                                        <Ionicons name='add' size={24} color="white" />
+                    
+                    </View>
+                   
                 </TouchableOpacity>
             </View>
             <View style={styles.separator} />
@@ -451,7 +460,7 @@ const Profile = () => {
                             style={{ width: "100%", height: 200, borderRadius: 10 }}
                             resizeMode="cover"
                         />
-                        <Text style={{ marginTop: 5, fontWeight: "bold", marginBottom: 5, }}>{item.caption}</Text>
+                        <Text style={{ marginTop: 5, fontWeight: "bold", marginBottom: 5, marginLeft:4 }}>{item.caption}</Text>
 
                         <View style={styles.separator} />
 

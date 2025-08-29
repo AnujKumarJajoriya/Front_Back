@@ -37,4 +37,7 @@ export default App
 
 // npm i react-native-heroicons
 // npm i react-native-responsive-screen
-// npm i react-native-vector-icons
+
+// npm install @react-native-vector-icons/ionicons @react-native-vector-icons/fontawesome6
+
+

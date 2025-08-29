@@ -16,7 +16,7 @@ const Welcome = () => {
                 </View>
 
                 <View>
-                    <Text style={{ fontSize: hp(2.6), fontWeight: "bold", color: "black", fontStyle: "italic" }}>Welcome to MyApp</Text>
+                    <Text style={{ fontSize: hp(2.6), fontWeight: "bold", color: "black", fontStyle: "italic" }}>Welcome to Postify</Text>
 
                 </View>
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
