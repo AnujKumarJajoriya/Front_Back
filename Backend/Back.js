@@ -9,6 +9,10 @@ const jwt = require("jsonwebtoken")
 const cors = require("cors")
 const multer = require("multer")
 const crypto = require("crypto")
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+require("dotenv").config();
+
 
 
 app.use(cors())
@@ -16,18 +20,20 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/uploads")
-    },
-    filename: function (req, file, cb) {
-        crypto.randomBytes(12, function (err, bytes) {
-            const fn = bytes.toString("hex") + path.extname(file.originalname)
-            cb(null, fn)
-        })
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET
+})
 
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "postify_uploads", // folder name in your Cloudinary
+        allowed_formats: ["jpg", "jpeg", "png"]
     }
 })
+
 
 const upload = multer({ storage: storage })
 
@@ -37,7 +43,7 @@ function verifyToken(req, res, next) {
     if (!authHeader) return res.status(401).json({ message: "No token provided" });
     const token = authHeader.split(" ")[1]; // extract real token
 
-    jwt.verify(token, "secret123", (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) return res.status(401).json({ message: "Invalid token" });
         req.userId = decoded.id; // save user id
         next();
@@ -59,7 +65,7 @@ app.post("/signup", async function (req, res) {
                     password: hash
                 })
 
-                let token = jwt.sign({ id: user._id }, "secret123")
+                let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
 
                 res.status(201).json({
                     message: "User created successfully",
@@ -88,7 +94,7 @@ app.post("/login", async function (req, res) {
     else {
         bcrypt.compare(password, user.password, (err, result) => {
             if (result) {
-                const token = jwt.sign({ id: user._id }, "secret123")
+                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
                 res.json({
                     message: "Login successful",
                     token,
@@ -111,7 +117,7 @@ app.post("/posts", verifyToken, upload.single("image"), async (req, res) => {
 
     const post = await postmodel.create({
         user: req.userId,
-        imageurl: `/images/uploads/${req.file.filename}`,
+        imageurl: req.file.path,
         caption,
     })
 
@@ -197,7 +203,7 @@ app.get("/myposts", verifyToken, async (req, res) => {
 app.get("/allusers", verifyToken, async (req, res) => {
 
 
-    const allusers = await usermodel.find({} , "username email")
+    const allusers = await usermodel.find({}, "username email")
     res.json(allusers);
 
 
@@ -232,6 +238,6 @@ app.get("/commentedPosts", verifyToken, async (req, res) => {
 })
 
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 5000, () => {
     console.log("Server running on http://localhost:5000")
 })

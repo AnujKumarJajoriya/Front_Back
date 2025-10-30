@@ -54,7 +54,7 @@ const CommentedPosts = () => {
 
 
                             <Image
-                                source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
+                                source={{ uri: item.imageurl }}
                                 style={{ width: "100%", height: 200, borderRadius: 10 }}
                                 resizeMode="cover"
                             />

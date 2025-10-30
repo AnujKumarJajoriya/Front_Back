@@ -9,7 +9,8 @@ import {
   ScrollView,
   Modal,
   BackHandler,
-  FlatList
+  FlatList,
+  ToastAndroid
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -97,6 +98,10 @@ const Home = ({ navigation }) => {
   };
 
 
+  const Newfeatures = ()=>{
+    ToastAndroid.showWithGravity("This Feature Will be Available Soon." , ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+  }
+
   useEffect(() => {
     const loadingallparts = async () => {
 
@@ -142,7 +147,7 @@ const Home = ({ navigation }) => {
 
 
         <View style={{ flexDirection: "row", justifyContent: "space-around", alignSelf: "center" }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={Newfeatures}>
             <View style={{ marginRight: 18 }}>
               <Ionicons name='settings' size={27} color="black" />
 
@@ -150,7 +155,7 @@ const Home = ({ navigation }) => {
 
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={Newfeatures}>
             <View>
               <Ionicons name='chatbubble-ellipses' size={27} color="black" />
 
@@ -235,7 +240,7 @@ const Home = ({ navigation }) => {
 
 
             <Image
-              source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
+              source={{ uri: item.imageurl  }}
               style={{ width: "100%", height: 200, borderRadius: 10 }}
               resizeMode="cover"
             />

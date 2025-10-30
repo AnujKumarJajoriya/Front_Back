@@ -1,11 +1,12 @@
-import { View, Text, TouchableOpacity, Alert, Image, Modal, StyleSheet, FlatList, ScrollView, TextInput, BackHandler } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Image, Modal, StyleSheet, FlatList, ScrollView, TextInput, BackHandler, ActivityIndicator, ToastAndroid } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
-import Ionicons from '@react-native-vector-icons/ionicons' 
+import Ionicons from '@react-native-vector-icons/ionicons'
+
 
 
 
@@ -13,6 +14,8 @@ import Ionicons from '@react-native-vector-icons/ionicons'
 const Profile = () => {
 
     const [user, setUser] = useState(null);
+    const [uploading, setuploading] = useState(false)
+
 
     const userinfo = async () => {
         const storedUser = await AsyncStorage.getItem("user");
@@ -182,7 +185,9 @@ const Profile = () => {
             const token = await AsyncStorage.getItem("token");
             if (!token) return Alert.alert("Please login first.");
             if (!createpostimage) return Alert.alert("Please select an image");
-
+             setuploading(true)
+              setcreatepostmodal(false)
+            
             const formData = new FormData();
             formData.append("image", {
                 uri: createpostimage,
@@ -197,21 +202,31 @@ const Profile = () => {
                 body: formData
             });
 
+            
             const data = await res.json();
             console.log("Response:", data);
 
             if (res.ok) {
-                Alert.alert("Post uploaded ✅");
+               
+                
+                setTimeout(() => {
+                    setuploading(false);
+                    ToastAndroid.showWithGravity("Post Uploaded Successfully." , ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+                    
+                }, 500);
+
                 setCaption("");
                 setcreatepostimage(null);
                 fetchmyposts()
-                setcreatepostmodal(false)
+               
             } else {
+                setuploading(false);
                 Alert.alert(data.message || "Something went wrong ❌");
             }
         } catch (error) {
             console.error("Error uploading post:", error);
             Alert.alert("Network error ❌");
+            setuploading(false)
         }
     };
 
@@ -244,6 +259,7 @@ const Profile = () => {
 
 
 
+
     useEffect(() => {
         userinfo();
     }, []);
@@ -273,7 +289,9 @@ const Profile = () => {
 
 
     return (
-        <View style={{ flex: 1, justifyContent: "flex-start", backgroundColor: "white" }}>
+        <View style={{ flex: 1, justifyContent: "flex-start", backgroundColor: "white" }}
+            pointerEvents={uploading ? "none" : "auto"}
+        >
 
 
             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
@@ -416,12 +434,12 @@ const Profile = () => {
 
                 >
 
-                    <View style={{flexDirection:"row" , justifyContent:"center" , alignItems:"center"}}>
- <Text style={{ color: "white", fontWeight: "bold", textAlign: "center", textAlignVertical: "center", fontSize: 17 , marginRight:5 }} >Create Post </Text>
-                                        <Ionicons name='add' size={24} color="white" />
-                    
+                    <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                        <Text style={{ color: "white", fontWeight: "bold", textAlign: "center", textAlignVertical: "center", fontSize: 17, marginRight: 5 }} >Create Post </Text>
+                        <Ionicons name='add' size={24} color="white" />
+
                     </View>
-                   
+
                 </TouchableOpacity>
             </View>
             <View style={styles.separator} />
@@ -456,11 +474,11 @@ const Profile = () => {
 
                     }}>
                         <Image
-                            source={{ uri: `http://10.0.2.2:5000${item.imageurl}` }}
+                            source={{ uri: item.imageurl }}
                             style={{ width: "100%", height: 200, borderRadius: 10 }}
                             resizeMode="cover"
                         />
-                        <Text style={{ marginTop: 5, fontWeight: "bold", marginBottom: 5, marginLeft:4 }}>{item.caption}</Text>
+                        <Text style={{ marginTop: 5, fontWeight: "bold", marginBottom: 5, marginLeft: 4 }}>{item.caption}</Text>
 
                         <View style={styles.separator} />
 
@@ -626,6 +644,27 @@ const Profile = () => {
 
                 </View>
             </Modal>
+            {uploading && (
+                <View
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 999,
+                    }}
+                >
+                    <ActivityIndicator size="large" color="#fff" />
+                    <Text style={{ color: "#fff", marginTop: 10, fontWeight: "bold" }}>
+                        Uploading your post...
+                    </Text>
+                </View>
+            )}
+
 
         </View>
     );
